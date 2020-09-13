@@ -23,14 +23,11 @@ class UserRepository {
     async findByEmail(email) { 
         try {
             const user = await db.table('users').where({ email });
-            
-            if(user.length == 0) {
-                throw new ValidateException('E-mail inválido.', 400);
-            }
             return user[0];
 
         } catch (e) {
-            throw new ValidateException(e.message, e.status);
+            console.log(e)
+            throw new ValidateException('Erro ao verificar e-mail', 400);
         }
     }
 
@@ -44,30 +41,18 @@ class UserRepository {
     }
 
     async create(user) {
-        const { name, lastName, email, password } = user;
         try {
-            await db.table('users').insert({
-                name,
-                last_name: lastName,
-                email,
-                password: password
-            });
+            console.log(user)
+            await db.table('users').insert( user );
         } catch (e) {
+            console.log(e);
             throw new ValidateException('Erro ao inserir realizar cadastro. Tente novamente mais tarde.', 400);
         }
     }
 
     async update(user, id) {
         try {
-            const { name, lastName, email, code, avatar_url } = user;
-
-            await db.table('users').update({
-                name,
-                email,
-                code,
-                avatar_url,
-                last_name: lastName,
-            })
+            await db.table('users').update( user )
             .where({
                 id
             });

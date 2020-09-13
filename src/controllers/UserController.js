@@ -41,16 +41,17 @@ class UserController {
             return res.status(201).send();
 
        } catch (e) {
+           console.log(e);
            return res.status(e.status).json(e);
        }
     }
 
     async avatar(req = request, res = response) {
         try {
-            const { key } = req.file;
+            const { location } = req.file;
             const { id } = req.params;
 
-            await userRepository.update({ avatar_url: key}, id);
+            await userRepository.update({ avatar_url: location}, id);
             return res.status(204).send();
         } catch (e) {
             return res.status(e.status).send(e);
@@ -63,7 +64,7 @@ class UserController {
             const { id } = req.params;
             const { user } = req.body;
 
-            await UserRepository.update(user, id);
+            await userRepository.update(user, id);
 
             return res.status(201).send();
         } catch (e) {

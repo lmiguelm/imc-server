@@ -12,6 +12,7 @@ npm-debug.*
 web-build/
 tmp/uploads/*
 !tmp/uploads/.gitkeep
+.env
 
 # macOS
 .DS_Store

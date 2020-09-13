@@ -17,6 +17,11 @@ class AuthController {
 
             const token = await authService.validateLogin(email, password);
             const user = await userRepository.findByEmail(email);
+
+            if(user.length == 0) {
+                throw new ValidateException('E-mail inválido.', 400);
+            }
+
             delete user.password;
             
             return res
