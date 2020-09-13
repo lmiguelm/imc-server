@@ -37,7 +37,7 @@ class UserController {
             
             const encrypted = await authService.encrypt(user.password);
             
-            await userRepository.create({ ...user, password: encrypted });
+            await userRepository.create({ ...user, password: encrypted, avatar_url: 'https://imc-app-storage-files.s3.amazonaws.com/sem_foto.png' });
             return res.status(201).send();
 
        } catch (e) {

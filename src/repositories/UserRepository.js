@@ -1,6 +1,9 @@
 const db = require('../database/connections');
 const ValidateException = require('../controllers/ValidateException');
 
+const aws = require('aws-sdk');
+const s3 = new aws.S3();
+
 class UserRepository {
     
     async findAll() {
@@ -74,7 +77,28 @@ class UserRepository {
 
     async delete(id) {
         try {
+            const { avatar_url } = await this.findById(id);
+    
             await db.table('users').delete().where({ id });
+
+            if(avatar_url !== 'https://imc-app-storage-files.s3.amazonaws.com/sem_foto.png') {
+                if(process.env.STORAGE_TYPE == 's3') {
+                    return s3.deleteObject({
+                        Bucket: process.env.BUCKET_NAME,
+                        Key: process.env.AWS_SECRET_ACCESS_KEY
+                    })
+                    .promise()
+                    .then(response => {
+                        console.log('certo');
+                        console.log(response.status)
+                    })
+                    .catch(response => {
+                        console.log('erro');
+                        console.log(response.status)
+                    });
+                }
+            } 
+
         } catch (e) {
             throw new ValidateException('Não foi possivel remover este usuário.', 400);
         }
