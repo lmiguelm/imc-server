@@ -87,8 +87,11 @@ class AuthController {
 
     async resetPassword(req = request, res = response) {
         try {
-            const { id } = req.body;
             const { password } = req.body;
+            const { id } = req.body;
+            const {userId} = req;
+            
+            if(id != userId) throw new ValidateException('Acesso negado!', 401);
 
             await authService.changePassword(id, password);
 
@@ -101,6 +104,9 @@ class AuthController {
     async changePassword(req = request, res = response) {
         try {
             const { id } = req.params;
+            const {userId} = req;
+            
+            if(id != userId) throw new ValidateException('Acesso negado!', 401);
 
             const { oldPassword } = req.body;
             await authService.decrypt(oldPassword, id);

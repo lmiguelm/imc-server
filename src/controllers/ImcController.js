@@ -1,6 +1,7 @@
 const { request, response } = require('express');
 
 const ImcRepository = require('../repositories/ImcRepository');
+const ValidateException = require('./ValidateException');
 const imcRepository = new ImcRepository();
 
 class ImcController {
@@ -19,6 +20,13 @@ class ImcController {
     async findByUser(req = request, res = response) {
         try {
             const { userId } = req.params;
+            const userIdToken = req.userId;
+
+            if(userId != userIdToken) throw new ValidateException('Acesso negado!', 401);
+
+            console.log(userId, userIdToken);
+            
+
             const imcs = await imcRepository.findByUser(userId);
             res.status(200).json(imcs);
         } catch(e) {
@@ -43,6 +51,10 @@ class ImcController {
     async create(req = request, res = response) {
         try {
             const { imc } = req.body;
+            const userId = req.userId;
+
+            if(userId != imc.user_id) throw new ValidateException('Acesso negado!', 401);
+
             await imcRepository.create(imc);
             res.status(201).send();
         }  catch (e) {
@@ -55,6 +67,10 @@ class ImcController {
         try {
             const { imc } = req.body;
             const { id } = req.params;
+            const {userId} = req;
+            const {user_id} = imcRepository.findById(id);
+
+            if(userId != user_id) throw new ValidateException('Acesso negado!', 401);
             
             await imcRepository.update(imc, id);
             res.status(204).send();
@@ -67,6 +83,10 @@ class ImcController {
     async delete(req = request, res = response) {
         try {
             const { id } = req.params;
+            const {userId} = req;
+            const {user_id} = await imcRepository.findById(id);
+            
+            if(userId != user_id) throw new ValidateException('Acesso negado!', 401);
             await imcRepository.delete(id);
             return res.status(204).send();
         } catch (e) {

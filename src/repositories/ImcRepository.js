@@ -30,6 +30,11 @@ class ImcRepository {
         return imcs;
     }
 
+    async findById(id) {
+        const imc = await db.table('historic_imcs').where({ id });
+        return imc[0];
+    }
+
     async create(imc) {
 
         imc.created_at = utilDate.formatDate(new Date());

@@ -15,7 +15,6 @@ module.exports = async (req = request, res = response, next) => {
             '/auth/authenticateToken'
         ];
         const url = req.url;
-        console.log(url);
         
         // verificando se a rota passada na request é publica ...
         if(publicRoutes.some(p => p === url)) {
