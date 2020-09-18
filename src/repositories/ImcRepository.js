@@ -1,8 +1,7 @@
-const { request } = require("express");
-
 const db = require('../database/connections');
 
 const ValidationException = require('../controllers/ValidateException');
+const utilDate = require('../utils/date');
 
 class ImcRepository {
     
@@ -23,11 +22,23 @@ class ImcRepository {
         return imcs;
     }
 
+    async findByFilter(id, date, imc) {
+        const imcs = await db.table('historic_imcs')
+            .where('title', 'like', `%${imc}%`)
+            .andWhere('created_at', '=', date)
+            .andWhere('user_id', '=', id);
+        return imcs;
+    }
+
     async create(imc) {
+
+        imc.created_at = utilDate.formatDate(new Date());
+
         try {
             await db.table('historic_imcs').insert( imc );
              
         } catch (e) {
+            console.log(e);
             throw new ValidationException('Erro ao inserir Imc. Tente novamente mais tarde.', 400);
         }
     }

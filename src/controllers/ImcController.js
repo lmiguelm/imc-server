@@ -26,6 +26,19 @@ class ImcController {
         }
     }
 
+    async filter(req = request, res = response) {
+        try {
+            const { id } = req.params;
+            const { date, imc } = req.query;
+
+            const imcs = await imcRepository.findByFilter(id, date, imc);
+
+            res.status(200).json(imcs);
+        } catch (e) {
+            res.status(e.status).json(e);
+        }
+    }
+
     // POST
     async create(req = request, res = response) {
         try {

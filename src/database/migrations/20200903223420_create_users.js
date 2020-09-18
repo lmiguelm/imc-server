@@ -7,9 +7,10 @@ exports.up = async (knex) => {
         users.string('email').unique().notNullable();
         users.string('password').notNullable();
         users.string('avatar_url');
+        users.string('key');
         users.integer('code').defaultTo(null).comment('Código informado quando usuário esquecer a senha');
 
-        users.timestamp('created_at').defaultTo(knex.fn.now());
+        users.string('created_at').notNullable();
     });
   
 };

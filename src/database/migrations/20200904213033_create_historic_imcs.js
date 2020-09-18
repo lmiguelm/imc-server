@@ -8,7 +8,7 @@ exports.up = async knex => {
         table.string('color').notNullable();
         table.string('title').notNullable();
 
-        table.timestamp('created_at').defaultTo(knex.fn.now());
+        table.string('created_at').notNullable();
 
         table.integer('user_id').unsigned().notNullable()
             .references('id').inTable('users')

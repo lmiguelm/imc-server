@@ -40,6 +40,7 @@ routes.get('/imcs/:userId', imcController.findByUser);
 routes.post('/imcs/new', imcController.create);
 routes.put('/imcs/:id', imcController.update);
 routes.delete('/imcs/:id', imcController.delete);
+routes.get('/imcs/:id/filter', imcController.filter);
 
 // Connections
 

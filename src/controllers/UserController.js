@@ -37,7 +37,7 @@ class UserController {
             
             const encrypted = await authService.encrypt(user.password);
             
-            await userRepository.create({ ...user, password: encrypted, avatar_url: 'https://imc-app-storage-files.s3.amazonaws.com/sem_foto.png' });
+            await userRepository.create({ ...user, password: encrypted, avatar_url: 'https://imc-app-storage-files.s3.amazonaws.com/sem_foto.png', key: 'sem_foto.png' });
             return res.status(201).send();
 
        } catch (e) {
@@ -48,10 +48,9 @@ class UserController {
 
     async avatar(req = request, res = response) {
         try {
-            const { location } = req.file;
+            const { location, key } = req.file;
             const { id } = req.params;
-
-            await userRepository.update({ avatar_url: location}, id);
+            await userRepository.updateAvatar(location, key, id);
             return res.status(204).send();
         } catch (e) {
             return res.status(e.status).send(e);

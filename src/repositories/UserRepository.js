@@ -1,6 +1,8 @@
 const db = require('../database/connections');
 const ValidateException = require('../controllers/ValidateException');
 
+const utilDate = require('../utils/date');
+
 const aws = require('aws-sdk');
 const s3 = new aws.S3();
 
@@ -45,7 +47,7 @@ class UserRepository {
 
     async create(user) {
         try {
-            console.log(user)
+            user.created_at = utilDate.formatDate(new Date());
             await db.table('users').insert( user );
         } catch (e) {
             console.log(e);
@@ -66,6 +68,35 @@ class UserRepository {
         }
     }
 
+    async updateAvatar(img, key_img, id) {
+        try {
+            const { key } = await this.findById(id);
+            
+            await this.update({avatar_url: img, key: key_img}, id);
+
+            if(key != 'sem_foto.png') {
+                if(process.env.STORAGE_TYPE == 's3') {
+                    return s3.deleteObject({
+                        Bucket: process.env.BUCKET_NAME,
+                        Key: key
+                    })
+                    .promise()
+                    .then(response => {
+                        console.log('certo');
+                        console.log(response.status)
+                    })
+                    .catch(response => {
+                        console.log('erro');
+                        console.log(response.status)
+                    });
+                }
+            }
+        } catch(e) {
+            console.log(e);
+            throw new ValidateException('Erro ao alterar imagem.', 400);
+        }
+    }
+
     async updatePassword(password, id) {
         try {
             await db.table('users').update({ password }).where({ id });
@@ -77,15 +108,15 @@ class UserRepository {
 
     async delete(id) {
         try {
-            const { avatar_url } = await this.findById(id);
+            const { key } = await this.findById(id);
     
             await db.table('users').delete().where({ id });
 
-            if(avatar_url !== 'https://imc-app-storage-files.s3.amazonaws.com/sem_foto.png') {
+            if(key !== 'sem_foto.png') {
                 if(process.env.STORAGE_TYPE == 's3') {
                     return s3.deleteObject({
                         Bucket: process.env.BUCKET_NAME,
-                        Key: process.env.AWS_SECRET_ACCESS_KEY
+                        Key: process.env.AWS_SECRET_ACCESS_KEY,
                     })
                     .promise()
                     .then(response => {
