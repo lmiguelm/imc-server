@@ -11,7 +11,8 @@ module.exports = async (req = request, res = response, next) => {
             '/auth/forgotPassword',
             '/users/new',
             '/auth/authenticateCode',
-            '/auth/resetPassword',     
+            '/auth/resetPassword',
+            '/auth/authenticateToken'
         ];
         const url = req.url;
         console.log(url);

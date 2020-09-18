@@ -39,7 +39,7 @@ class AuthService {
         // 2- palavra secreta
         // 3- expiração
         const token = jwt.sign({ id }, authConfig.secret, {
-            expiresIn: 86400
+            expiresIn: 172800
         });
 
         return `Bearer ${token}`;

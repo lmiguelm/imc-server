@@ -9,6 +9,11 @@ const userRepository = new UserRepository();
 const EmailService = require('../services/EmailService');
 const emailService = new EmailService();
 
+const jwt = require('jsonwebtoken');
+const authConfig = require('../config/auth.json');
+
+const ValidateException = require('../controllers/ValidateException');
+
 class AuthController {
     
     async login(req = request, res = response) {
@@ -53,9 +58,29 @@ class AuthController {
     async authenticateCode(req = request, res = response) {
         try {
             const { code } = req.body;
+            console.log(req.body);
             const user = await userRepository.findByCode(code);
             delete user.password
             return res.status(200).json(user);
+        } catch (e) {
+            
+            return res.status(e.status).json(e);
+        }
+    }
+
+    async authenticateToken(req = request, res = response) {
+        try {
+            const { token } = req.body;
+
+            const parts = token.split(' ');
+            const [scheme, tokenJWT ] = parts;
+            
+            jwt.verify(tokenJWT, authConfig.secret, err => {
+                if(err) {
+                    throw new ValidateException('Token inválido', 401);
+                }
+            });
+            return res.status(200).send();
         } catch (e) {
             return res.status(e.status).json(e);
         }

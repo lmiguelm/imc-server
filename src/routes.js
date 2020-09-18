@@ -25,6 +25,7 @@ routes.post('/auth/forgotPassword', authController.forgotPassword);
 routes.post('/auth/authenticateCode', authController.authenticateCode);
 routes.post('/auth/:id/changePassword', authController.changePassword);
 routes.post('/auth/resetPassword', authController.resetPassword);
+routes.post('/auth/authenticateToken', authController.authenticateToken);
 
 // User
 routes.get('/users', userController.findAll);
