@@ -58,7 +58,6 @@ class AuthController {
     async authenticateCode(req = request, res = response) {
         try {
             const { code } = req.body;
-            console.log(req.body);
             const user = await userRepository.findByCode(code);
             delete user.password
             return res.status(200).json(user);

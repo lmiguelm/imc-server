@@ -3,6 +3,7 @@ const { request, response } = require('express');
 const UserService = require('../services/UserService');
 const UserRepository = require('../repositories/UserRepository');
 const AuthService = require('../services/AuthService');
+const ValidateException = require('./ValidateException');
 
 const userService = new UserService();
 const userRepository = new UserRepository();
@@ -20,6 +21,9 @@ class UserController {
     async findById(req = request, res = response) { 
         try {
             const { id } = req.params;
+            const userId = req.userId;
+            if(id != userId) throw new ValidateException('Acesso negado!', 401);
+
             const user = await userRepository.findById(id);
             delete user.password;
             return res.status(200).json(user);
@@ -49,7 +53,11 @@ class UserController {
     async avatar(req = request, res = response) {
         try {
             const { location, key } = req.file;
+
             const { id } = req.params;
+            const userId = req.userId;
+            if(id != userId) throw new ValidateException('Acesso negado!', 401);
+
             await userRepository.updateAvatar(location, key, id);
             return res.status(204).send();
         } catch (e) {
@@ -60,8 +68,11 @@ class UserController {
     //PUT
     async update(req = request, res = response) {
         try {
-            const { id } = req.params;
             const { user } = req.body;
+
+            const { id } = req.params;
+            const userId = req.userId;
+            if(id != userId) throw new ValidateException('Acesso negado!', 401);
 
             await userRepository.update(user, id);
 
@@ -75,6 +86,9 @@ class UserController {
     async delete(req = request, res = response) {
        try {
             const { id } = req.params;
+            const userId = req.userId;
+            if(id != userId) throw new ValidateException('Acesso negado!', 401);
+            
             await userRepository.delete(id);
             return res.status(204).send();
        } catch (e) {

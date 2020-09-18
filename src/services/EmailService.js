@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer');
-const  smtpConfig = require('../config/smtp');
 const ValidateException = require('../controllers/ValidateException');
 
 class EmailService {
@@ -7,11 +6,16 @@ class EmailService {
     async sendEmailRecuperationPass(code, user) {
         try {
             const transporter = nodemailer.createTransport({
-                host: smtpConfig.host,
-                port: smtpConfig.port,
-                secure: smtpConfig.secure,
-                auth: smtpConfig.auth,
-                tls: smtpConfig.tls
+                host: process.env.EMAIL_HOST,
+                port: process.env.EMAIL_PORT,
+                secure: process.env.SECURE,
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASSWORD
+                },
+                tls: {
+                    rejectUnauthorized: process.env.EMAIL_REJECTUNAUTHORIZED
+                }
             });
 
             await transporter.sendMail({
