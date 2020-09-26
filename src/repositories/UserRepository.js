@@ -48,7 +48,8 @@ class UserRepository {
     async create(user) {
         try {
             user.created_at = utilDate.formatDate(new Date());
-            await db.table('users').insert( user );
+            const userId = await db.table('users').insert( user );
+            return userId[0];
         } catch (e) {
             console.log(e);
             throw new ValidateException('Erro ao inserir realizar cadastro. Tente novamente mais tarde.', 400);

@@ -14,10 +14,9 @@ class AuthService {
         try {
             const user = await userRepository.findByEmail(emailReq);
 
-            if(user.length === 0) {
+            if(user === undefined) {
                 throw new ValidateException('E-mail incorreto', 400);
             }
-
             const { id } = user;
             
             const isPassword = await this.decrypt(passowordReq, id);

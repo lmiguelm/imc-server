@@ -41,8 +41,17 @@ class UserController {
             
             const encrypted = await authService.encrypt(user.password);
             
-            await userRepository.create({ ...user, password: encrypted, avatar_url: 'https://imc-app-storage-files.s3.amazonaws.com/sem_foto.png', key: 'sem_foto.png' });
-            return res.status(201).send();
+            const id = await userRepository.create({ ...user, password: encrypted, avatar_url: 'https://imc-app-storage-files.s3.amazonaws.com/sem_foto.png', key: 'sem_foto.png' });
+            const token = authService.generateToken(id);
+            
+            const userData = await userRepository.findById(id);
+            delete userData.password;
+
+            return res
+                    .status(201)
+                    .set({ 'Authorization': token })
+                    .set({'access-control-expose-headers': 'Authorization'})
+                    .json(userData);
 
        } catch (e) {
            console.log(e);
